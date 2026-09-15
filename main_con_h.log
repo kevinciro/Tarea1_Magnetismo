@@ -1,0 +1,37 @@
+======================================================================
+h: [0.0, 0.5]
+======================================================================
+L: [24]
+Frontera: periodica
+T (18 valores): [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0]
+mcs_max: 50000
+n_intentos: 40
+tao: 15000 para T<=0.5, 5000 para el resto
+Total: 80 cadenas x 18 temperaturas = 1440 puntos
+Carpeta de resultados: ResultadosConH/ (incluye video + CSV por cada una de las 80 cadenas)
+======================================================================
+5/80 cadenas completadas (90/1440 puntos T)
+10/80 cadenas completadas (180/1440 puntos T)
+15/80 cadenas completadas (270/1440 puntos T)
+20/80 cadenas completadas (360/1440 puntos T)
+25/80 cadenas completadas (450/1440 puntos T)
+30/80 cadenas completadas (540/1440 puntos T)
+35/80 cadenas completadas (630/1440 puntos T)
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+40/80 cadenas completadas (720/1440 puntos T)
+/home/kevin/Fundamentos_Magnetismo/Tarea1/metricas.py:54: RuntimeWarning: invalid value encountered in scalar divide
+  U = 1 - Ms4_termalizado_prom / (3 * Ms2_termalizado_prom**2) # calculo del cumulante de Binder de Ms
+45/80 cadenas completadas (810/1440 puntos T)

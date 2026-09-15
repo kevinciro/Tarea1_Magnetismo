@@ -1,4 +1,4 @@
-# Logica corregida con IA
+# Logica revisada y corregida con IA
 
 def _fila_columna_vecinas(i, j, L, is_periodica):
     # Calcula, de forma independiente, a qué fila corresponde moverse
@@ -18,7 +18,6 @@ def _fila_columna_vecinas(i, j, L, is_periodica):
 
     return fila_arriba, fila_abajo, col_izq, col_der
 
-
 def indices_primeros_vecinos(i, j, L, is_periodica=False):
     if(j>L-1 or j<0 or i>L-1 or i<0):
         raise ValueError("El valor de los indices debe estar entre 0 y L-1.")
@@ -31,7 +30,6 @@ def indices_primeros_vecinos(i, j, L, is_periodica=False):
         (None, None) if fila_abajo is None else (fila_abajo, j),    # abajo
         (None, None) if col_izq is None else (i, col_izq),       # izquierda
     ]
-
 
 def indices_segundos_vecinos(i, j, L, is_periodica=False):
     if(j>L-1 or j<0 or i>L-1 or i<0):
