@@ -15,13 +15,17 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------------
 L_LISTA = [24]
 T_LISTA = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0]
-H_LISTA = [0.0, 0.5]
+# Solo h=0.5: h=0 ya esta completo y correcto (40/40 intentos, con E/N ya
+# corregido), no hace falta volver a correrlo. n_intentos=20 (no 40) para
+# que esta corrida tome ~6h en vez de ~11h; se puede completar despues con
+# los 20 restantes si hace falta mas estadistica.
+H_LISTA = [0.5]
 MCS_MAX = 50_000
-N_INTENTOS = 40
+N_INTENTOS = 20
 J1 = 1
 CARPETA_BASE = "ResultadosConH"
-ARCHIVO_SALIDA = os.path.join(CARPETA_BASE, "resultados_main_con_h.csv")
-ARCHIVO_RESUMEN = os.path.join(CARPETA_BASE, "resumen_main_con_h.csv")
+ARCHIVO_SALIDA = os.path.join(CARPETA_BASE, "resultados_h05_20intentos.csv")
+ARCHIVO_RESUMEN = os.path.join(CARPETA_BASE, "resumen_h05_20intentos.csv")
 CARPETA_GRAFICAS = os.path.join(CARPETA_BASE, "graficas")
 
 def obtener_tao(t):
@@ -59,14 +63,17 @@ if __name__ == "__main__":
     resumen = resumir_intentos_with_h(df)
     resumen.to_csv(ARCHIVO_RESUMEN, index=False)
 
+    # Nombres con sufijo "_h05_20intentos" a proposito: esta corrida solo
+    # tiene h=0.5 (sin h=0 para comparar), asi que no debe pisar las
+    # graficas finales combinadas que ya existen en CARPETA_GRAFICAS.
     for columna, ylabel, nombre_archivo in [
-        ("M", r"$M$", "M_T.png"),
-        ("Ms", r"$M_s$", "Ms_T.png"),
-        ("chi", r"$\chi$", "chi_T.png"),
-        ("chi_s", r"$\chi_s$", "chi_s_T.png"),
-        ("Cv", r"$C_v$", "Cv_T.png"),
-        ("U", r"$U$", "U_T.png"),
-        ("E", r"$E$", "E_T.png"),
+        ("M", r"$M$", "M_T_h05_20intentos.png"),
+        ("Ms", r"$M_s$", "Ms_T_h05_20intentos.png"),
+        ("chi", r"$\chi$", "chi_T_h05_20intentos.png"),
+        ("chi_s", r"$\chi_s$", "chi_s_T_h05_20intentos.png"),
+        ("Cv", r"$C_v$", "Cv_T_h05_20intentos.png"),
+        ("U", r"$U$", "U_T_h05_20intentos.png"),
+        ("E", r"$E$", "E_T_h05_20intentos.png"),
     ]:
         graficar_observable_h(resumen, columna, ylabel, h_lista=H_LISTA, titulo=f"{columna}(T)")
         plt.savefig(os.path.join(CARPETA_GRAFICAS, nombre_archivo), dpi=110)

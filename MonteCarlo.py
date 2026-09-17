@@ -5,7 +5,7 @@ import os
 import numpy as np
 import pandas as pd
 import multiprocessing as mp
-from FlipSpin import flip_spin, energia_total_inicial, calcular_Ms, flip_spin_whith_h, energia_total_inicial_with_h
+from FlipSpin import flip_spin, energia_total_inicial, calcular_Ms, flip_spin_whith_h, energia_total_inicial_with_h, calcular_Ms_con_h
 from metricas import calcular_metricas_finales, calcular_metricas_finales_with_h
 from graficas import generar_video
 
@@ -96,7 +96,7 @@ def simular_una_temperatura_with_h(S, mcs_max=10000, J1=1, T=1, h=0.0, is_period
 
     for mcs in mcs_steps: # para cada paso de Monte Carlo
         E, M, S = flip_spin_whith_h(J1, J2, T, S, E, M, is_periodica, h) # Se realiza el flip de spin y se actualizan los valores de energia, magnetizacion y la configuracion de spins
-        Ms = calcular_Ms(S) # Se calcula la magnetizacion de subred (orden antiferromagnetico), incluso con campo externo
+        Ms = calcular_Ms_con_h(S) # Se calcula la magnetizacion de subred con la definicion (A + |B|)/2, correcta cuando el campo rompe la simetria arriba/abajo
 
         historial_E.append(E) # Se guarda el valor de energia en el historial
         historial_M.append(M) # Se guarda el valor de magnetizacion en el historial
@@ -238,16 +238,20 @@ def _correr_una_cadena_with_h(tarea):
         resultados_cadena.append(r)
 
         if guardar_por_cadena:
-            # Ms instantaneo de ESTA configuracion puntual (para el video),
-            # distinto de r["Ms"] (promedio termalizado sobre muchas
-            # muestras, usado para las estadisticas del barrido).
-            cuadros_video.append((t, S.copy(), calcular_Ms(S)))
+            # M instantaneo (normalizado por sitio, S.sum()/N) de ESTA
+            # configuracion puntual (para el video), distinto de r["M"]
+            # (promedio termalizado sobre muchas muestras, usado para las
+            # estadisticas del barrido). Con campo externo se muestra M
+            # (magnetizacion total) en vez de Ms, ya que es la cantidad que
+            # el campo satura visiblemente al bajar T.
+            cuadros_video.append((t, S.copy(), S.sum() / (l * l)))
 
     if guardar_por_cadena:
         carpeta = _ruta_cadena(carpeta_base, l, per, intento, h=h)
         pd.DataFrame(resultados_cadena).to_csv(
             os.path.join(carpeta, "resultados_cadena.csv"), index=False)
-        generar_video(cuadros_video, os.path.join(carpeta, "evolucion.mp4"), fps=1)
+        generar_video(cuadros_video, os.path.join(carpeta, "evolucion.mp4"), fps=1,
+                      nombre_valor="M", ylabel_valor=r"$M$", ylim_valor=(-1.05, 1.05))
 
     return resultados_cadena
 
@@ -289,7 +293,7 @@ def correr_barrido(L_lista, T_lista, mcs_max, n_intentos, tao, J1=1, n_procesos=
 
     return pd.DataFrame(resultados)
 
-def correr_barrido_with_h(L_lista, T_lista, mcs_max, n_intentos, tao, h_lista, J1=1, n_procesos=None, carpeta_base=None):
+def correr_barrido_with_h(L_lista, T_lista, mcs_max, n_intentos, tao, h_lista, J1=1, n_procesos=None, carpeta_base=None, intento_inicio=0):
     # Ejecuta una cadena de Markov completa en cada nucleo de CPU disponible
     # armando un numero de n_intentos de cadenas independientes por cada (L, frontera), y cada
     # cadena recorre TODAS las temperaturas de mayor a menor en una sola
@@ -301,6 +305,12 @@ def correr_barrido_with_h(L_lista, T_lista, mcs_max, n_intentos, tao, h_lista, J
     # dentro de carpeta_base/ResultadosPorCadena/... (ver _correr_una_cadena).
     # Si es None (por defecto), no se guarda nada por cadena, solo se
     # devuelve el DataFrame combinado, igual que antes.
+    #
+    # intento_inicio: indice (0-based) del primer intento a correr. Permite
+    # reanudar un barrido interrumpido corriendo solo los intentos que
+    # faltan (n_intentos = cuantos faltan, no el total), sin pisar las
+    # carpetas Intento1..Intento{intento_inicio} que ya existen de una
+    # corrida anterior.
 
     T_lista_desc = sorted(T_lista, reverse=True)
 
@@ -312,7 +322,7 @@ def correr_barrido_with_h(L_lista, T_lista, mcs_max, n_intentos, tao, h_lista, J
     idx = 0
     for l in L_lista:
         for h in h_lista:
-            for intento in range(n_intentos):
+            for intento in range(intento_inicio, intento_inicio + n_intentos):
                 tareas.append((l, True, T_lista_desc, mcs_max, J1, intento, semillas[idx], tao, h, carpeta_base))
                 idx += 1
 

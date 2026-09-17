@@ -1,0 +1,22 @@
+======================================================================
+h: [0.5]
+======================================================================
+L: [24]
+Frontera: periodica
+T (18 valores): [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 2.0]
+mcs_max: 50000
+n_intentos: 20
+tao: 15000 para T<=0.5, 5000 para el resto
+Total: 20 cadenas x 18 temperaturas = 360 puntos
+Carpeta de resultados: ResultadosConH/ (incluye video + CSV por cada una de las 20 cadenas)
+======================================================================
+5/20 cadenas completadas (90/360 puntos T)
+10/20 cadenas completadas (180/360 puntos T)
+15/20 cadenas completadas (270/360 puntos T)
+20/20 cadenas completadas (360/360 puntos T)
+Cadenas terminadas, generando resumen y graficas finales...
+/home/kevin/Fundamentos_Magnetismo/Tarea1/graficas.py:153: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+DONE
+Filas: 360  Columnas: 13
+Tiempo total: 5.53 horas

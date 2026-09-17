@@ -152,11 +152,42 @@ def graficar_observable_h(resumen, columna, ylabel, h_lista, titulo=None, T_min=
     plt.tight_layout()
     plt.show()
 
-def generar_video(cuadros, archivo_salida, fps=1):
-    # cuadros: lista de (T, S, Ms) de mayor a menor T, una instantanea de la
-    # red por cada temperatura visitada (ver evolucion_gif.py / MonteCarlo._correr_una_cadena).
-    # Video con dos paneles: izquierda, la curva completa (fija) de Ms vs T
-    # con un punto/flecha que señala el cuadro actual; derecha, la
+def graficar_delta_S_M(tabla, h_lista, titulo=None):
+    # tabla: DataFrame con columnas T, h, delta_S_M (salida de
+    # EfectoMagnetocalorico.calcular_tabla_delta_S_M). Un solo panel, una
+    # linea por cada h en h_lista, mismo estilo/paleta que
+    # graficar_observable_h. No hay barras de error: delta_S_M es una
+    # diferencia finita sobre M_mean, no un promedio directo sobre intentos.
+    paleta = ["tab:blue", "tab:red", "tab:green", "tab:purple", "tab:brown", "tab:gray"]
+    colores_h = {h: paleta[i % len(paleta)] for i, h in enumerate(sorted(h_lista))}
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for h in h_lista:
+        sub_h = tabla[tabla["h"] == h].sort_values("T")
+        ax.plot(sub_h["T"], sub_h["delta_S_M"], "o--", color=colores_h[h],
+                linewidth=1, markersize=5, label=f"h={h:g}")
+
+    ax.set_xlabel("T")
+    ax.set_ylabel(r"$\Delta S_M$")
+    ax.axhline(0, color="0.5", linewidth=0.8)
+    ax.legend()
+    ax.grid(True, linestyle="--", linewidth=0.7, color="0.6", alpha=0.8)
+    if titulo:
+        ax.set_title(titulo)
+    plt.tight_layout()
+    plt.show()
+
+def generar_video(cuadros, archivo_salida, fps=1, nombre_valor="Ms", ylabel_valor=r"$M_s$", ylim_valor=(-0.03, 0.55)):
+    # cuadros: lista de (T, S, valor) de mayor a menor T, una instantanea de
+    # la red por cada temperatura visitada (ver evolucion_gif.py /
+    # MonteCarlo._correr_una_cadena[_with_h]). "valor" es la cantidad que se
+    # grafica en el panel izquierdo y en el titulo (Ms para h=0, M para
+    # h!=0): nombre_valor es el texto plano usado en el titulo, ylabel_valor
+    # el label en LaTeX del eje Y, y ylim_valor el rango de ese eje (Ms vive
+    # en [0, ~0.5], M normalizado en [-1, 1], asi que el rango por defecto
+    # no sirve para ambos casos).
+    # Video con dos paneles: izquierda, la curva completa (fija) de esa
+    # cantidad vs T con un punto que señala el cuadro actual; derecha, la
     # configuracion de la red como flechas (+1 roja arriba, -1 azul abajo),
     # sobre una cuadricula sin relleno de color.
     cmap = ListedColormap(["tab:blue", "tab:red"])  # -1 -> azul, +1 -> rojo
@@ -165,9 +196,9 @@ def generar_video(cuadros, archivo_salida, fps=1):
     _, S0, Ms0 = cuadros[0]
     L_local = S0.shape[0]
 
-    # La curva completa de Ms vs T se conoce de antemano (los cuadros ya
-    # vienen completos), asi que se dibuja fija una sola vez; solo el
-    # punto/flecha que señala "aqui vamos" se mueve cuadro a cuadro.
+    # La curva completa (Ms o M segun el caso) vs T se conoce de antemano
+    # (los cuadros ya vienen completos), asi que se dibuja fija una sola
+    # vez; solo el punto que señala "aqui vamos" se mueve cuadro a cuadro.
     T_todos = [c[0] for c in cuadros]
     Ms_todos = [c[2] for c in cuadros]
 
@@ -187,8 +218,8 @@ def generar_video(cuadros, archivo_salida, fps=1):
     # --- Panel izquierdo: Ms vs T, curva completa y fija ---
     ax_izq.plot(T_todos, Ms_todos, "o-", color="0.3", markersize=4, linewidth=1.5)
     ax_izq.set_xlabel("T")
-    ax_izq.set_ylabel(r"$M_s$")
-    ax_izq.set_ylim(-0.03, 0.55)
+    ax_izq.set_ylabel(ylabel_valor)
+    ax_izq.set_ylim(*ylim_valor)
     # Eje invertido: T alta a la izquierda, T baja a la derecha, para que el
     # punto avance de izquierda a derecha a medida que el video enfria el
     # sistema (mismo orden cronologico que T_todos, que viene de mayor a menor).
@@ -219,7 +250,7 @@ def generar_video(cuadros, archivo_salida, fps=1):
                        pivot="middle", scale=1, scale_units="xy", width=0.015,
                        headwidth=2.5, headlength=2.5, headaxislength=1.8)
 
-    titulo = ax_der.set_title(f"T = {cuadros[0][0]:.2f}   Ms = {Ms0:.3f}")
+    titulo = ax_der.set_title(f"T = {cuadros[0][0]:.2f}   {nombre_valor} = {Ms0:.3f}")
 
     fig.tight_layout()
 
@@ -242,7 +273,7 @@ def generar_video(cuadros, archivo_salida, fps=1):
         t, S_i, Ms_i = cuadros[i]
 
         q.set_UVC(U, 0.8 * S_i, S_i)
-        titulo.set_text(f"T = {t:.2f}   Ms = {Ms_i:.3f}")
+        titulo.set_text(f"T = {t:.2f}   {nombre_valor} = {Ms_i:.3f}")
 
         punto_actual.set_data([t], [Ms_i])
 

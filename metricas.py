@@ -23,7 +23,7 @@ def calcular_metricas_finales(tao, historial_E, historial_Ms, L, T):
 
     return {
         "T": T, "L": L,
-        "E": E_termalizada_prom,
+        "E": E_termalizada_prom / N, # energia por particula (E/N), no la extensiva
         "Ms": Ms_termalizado_prom,
         "Cv": Cv,
         "chi_s": chi_s,
@@ -55,7 +55,7 @@ def calcular_metricas_finales_with_h(tao, historial_E, historial_M, historial_Ms
 
     return {
         "T": T, "L": L,
-        "E": E_termalizada_prom,
+        "E": E_termalizada_prom / N, # energia por particula (E/N), no la extensiva
         "M": M_termalizado_prom,
         "Ms": Ms_termalizado_prom,
         "Cv": Cv,

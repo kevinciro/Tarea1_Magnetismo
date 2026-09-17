@@ -151,3 +151,35 @@ def calcular_Ms(S):
 
     # Se toma la mayor de las dos magnetizaciones absolutas en franjas
     return max(Ms_filas, Ms_columnas)
+
+def calcular_Ms_con_h(S):
+    # Con campo externo h!=0 la simetria arriba/abajo ya esta rota por el
+    # campo, asi que |M_A - M_B| (la definicion de calcular_Ms) deja de ser
+    # el parametro de orden correcto: si el campo alinea a las DOS subredes
+    # en la misma direccion (a T baja, el campo le gana al acoplamiento
+    # J2 antiferromagnetico), esa diferencia se va a cero aunque el sistema
+    # este perfectamente ordenado (solo que ferromagneticamente, no en
+    # franjas). En su lugar se usa (A + |B|)/2, donde:
+    #   - A = la subred con magnetizacion promedio mas alta (la que el
+    #     campo alinea de forma confiable, sin ambiguedad de signo)
+    #   - B = la otra subred, cuyo signo puede variar segun gane el campo
+    #     o el acoplamiento J2 (por eso se usa su valor absoluto, igual que
+    #     calcular_Ms usa abs() para no promediar a cero por la eleccion
+    #     de dominio)
+    # Igual que en calcular_Ms, se prueban franjas horizontales y
+    # verticales (orden degenerado) y se toma la mayor.
+    L = len(S[0])
+
+    def combinar(m1, m2):
+        A, B = max(m1, m2), min(m1, m2)
+        return (A + np.abs(B)) / 2
+
+    m_fila_par = S[0::2, :].mean()
+    m_fila_impar = S[1::2, :].mean()
+    Ms_h_filas = combinar(m_fila_par, m_fila_impar)
+
+    m_col_par = S[:, 0::2].mean()
+    m_col_impar = S[:, 1::2].mean()
+    Ms_h_columnas = combinar(m_col_par, m_col_impar)
+
+    return max(Ms_h_filas, Ms_h_columnas)
